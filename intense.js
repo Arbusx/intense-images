@@ -307,6 +307,10 @@ var Intense = (function() {
 
       setState(element, "intense--viewing");
     };
+    
+    image.onprogress = function() {
+      console.log( 'Получено с сервера ' + event.loaded + ' байт из ' + event.total );
+    }
 
     image.src = imageSource;
   }
