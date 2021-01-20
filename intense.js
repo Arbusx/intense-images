@@ -298,23 +298,31 @@ var Intense = (function() {
 
     
 
-		image = new Image();
-		let xhr = new XMLHttpRequest();
-		xhr.open('GET', imageSource, true);
-		// xhr.open('GET', '/Products/SFERMETEOR2/202101192354.jpg');
-		xhr.responseType = 'blob';
-		xhr.onload = function(e) {
-			let urlCreator = window.URL || window.webkitURL;
-			let imageUrl = urlCreator.createObjectURL(this.response);
-			console.log(imageUrl);
-			image.src = window.URL.createObjectURL(blob);
+	image = new Image();
+	let xhr = new XMLHttpRequest();
+	xhr.open('GET', imageSource, true);
+	xhr.responseType = 'blob';
+	xhr.onload = function(e) {
+		let urlCreator = window.URL || window.webkitURL;
+		let imageUrl = urlCreator.createObjectURL(this.response);
+		
+		sourceDimensions = { w: image.width, h: image.height }; // Save original dimensions for later.
+		target = image;
+		createViewer(title, caption);
+		lockBody();
+		bindEvents();
+		loop();
+		
+		setState(element, "intense--viewing");
+		document.getElementById("pBar").style.width = '0';
 
-		};
-		xhr.onprogress = function(e) {
-			console.log(parseInt((e.loaded / e.total) * 100));
-		};
+	};
+	xhr.onprogress = function(e) {
+		document.getElementById("pBar").style.width = parseInt((e.loaded / e.total) * 100)+'%';
+	};
 
-		xhr.send();
+	xhr.send();
+    image.src = imageSource;
 
     
 //     image = new Image();
@@ -328,10 +336,6 @@ var Intense = (function() {
 
 //       setState(element, "intense--viewing");
 //     };
-    
-//     image.onprogress = function() {
-//       console.log( 'Получено с сервера ' + event.loaded + ' байт из ' + event.total );
-//     }
 
 //     image.src = imageSource;
   }
@@ -439,4 +443,79 @@ var Intense = (function() {
 
 if (typeof module !== "undefined" && module.exports) {
   module.exports = Intense;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+let pathname = document.location.pathname;
+
+if (pathname == '/Products.php') {
+	document.body.classList.add('myImg');
+	
+	let pBar = document.createElement("div");
+	pBar.setAttribute('id', 'pBar');
+	document.body.appendChild(pBar);
+	
+	document.addEventListener("DOMContentLoaded", ready);
+}
+
+
+function ready() {
+	console.log('aaa');
+	let productImage = document.querySelectorAll('div.productImage');
+
+	for (let el of productImage) {
+		el.childNodes[0].onclick = function(event) { event.preventDefault(); }
+		// console.log(el.childNodes[0].setAttribute('data-image', el.childNodes[0].href));
+		el.childNodes[0].setAttribute('data-image', el.childNodes[0].href);
+		// let img = el.childNodes[0].childNodes[0];
+		// console.log(img);
+		// Intense(img);
+	}
+}
+
+
+window.onload = function() {
+	// Intensify all images with the 'intense' classname.
+    let elements = document.querySelectorAll('.productImage > a');
+	Intense(elements);
 }
