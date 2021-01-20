@@ -296,23 +296,44 @@ var Intense = (function() {
       image.onload = null;
     }
 
-    image = new Image();
-    image.onload = function() {
-      sourceDimensions = { w: image.width, h: image.height }; // Save original dimensions for later.
-      target = this;
-      createViewer(title, caption);
-      lockBody();
-      bindEvents();
-      loop();
-
-      setState(element, "intense--viewing");
-    };
     
-    image.onprogress = function() {
-      console.log( 'Получено с сервера ' + event.loaded + ' байт из ' + event.total );
-    }
 
-    image.src = imageSource;
+		image = new Image();
+		let xhr = new XMLHttpRequest();
+		xhr.open('GET', imageSource, true);
+		// xhr.open('GET', '/Products/SFERMETEOR2/202101192354.jpg');
+		xhr.responseType = 'blob';
+		xhr.onload = function(e) {
+			let urlCreator = window.URL || window.webkitURL;
+			let imageUrl = urlCreator.createObjectURL(this.response);
+			console.log(imageUrl);
+			image.src = window.URL.createObjectURL(blob);
+
+		};
+		xhr.onprogress = function(e) {
+			console.log(parseInt((e.loaded / e.total) * 100));
+		};
+
+		xhr.send();
+
+    
+//     image = new Image();
+//     image.onload = function() {
+//       sourceDimensions = { w: image.width, h: image.height }; // Save original dimensions for later.
+//       target = this;
+//       createViewer(title, caption);
+//       lockBody();
+//       bindEvents();
+//       loop();
+
+//       setState(element, "intense--viewing");
+//     };
+    
+//     image.onprogress = function() {
+//       console.log( 'Получено с сервера ' + event.loaded + ' байт из ' + event.total );
+//     }
+
+//     image.src = imageSource;
   }
 
   function bindEvents() {
